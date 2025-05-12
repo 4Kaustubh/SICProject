@@ -1,0 +1,107 @@
+﻿@model IEnumerable<SICProject.Models.RegistrationmasterVM>
+
+@{
+    ViewData["Title"] = "List Of Students";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="bi bi-people-fill"></i> List Of Students</h2>
+        <a asp-action="Registration" asp-controller="Home" class="btn btn-success">
+            <i class="bi bi-plus-circle me-1"></i> Create New
+        </a>
+    </div>
+    <div class="row p-1">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible rounded-0 border-dark text-dark fw-bold" role="alert">
+                @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible rounded-0 border-dark text-dark fw-bold" role="alert">
+                @TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.First().StudentName)</th>
+
+                    <th>@Html.DisplayNameFor(model => model.First().DepartmentName)</th>
+                    <th>@Html.DisplayNameFor(model => model.First().Email)</th>
+                    <th>@Html.DisplayNameFor(model => model.First().MobileNumber)</th>
+                    <th>@Html.DisplayNameFor(model => model.First().IsApproved)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.StudentName)</td>
+                        <td>@Html.DisplayFor(modelItem => item.DepartmentName)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                        <td>@Html.DisplayFor(modelItem => item.MobileNumber)</td>
+                        <td>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input toggle-approval" type="checkbox"
+                                       data-id="@item.RegistrationId"
+                                @(item.IsApproved ?? false ? "checked" : "")>
+                                <label class="form-check-label">
+                                    @(item.IsApproved ?? false ? "Approved" : "Pending")
+                                </label>
+                            </div>
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.RegistrationId" class="btn btn-sm btn-primary me-1" title="Edit">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.RegistrationId" class="btn btn-sm btn-danger" title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+@section MyCssScripts {
+
+}
+
+@section MyJsScripts {
+    <script>
+        $(document).ready(function () {
+            $('.toggle-approval').change(function () {
+                var checkbox = $(this);
+                var isChecked = checkbox.is(':checked');
+                var id = checkbox.data('id');
+
+                $.ajax({
+                    url: '/Admin/ToggleApproval',
+                    type: 'POST',
+                    data: {
+                        id: id,
+                        isApproved: isChecked
+                    },
+                    success: function (response) {
+                        checkbox.next('.form-check-label').text(isChecked ? 'Approved' : 'Pending');
+                        toastr.success(response.message);
+                    },
+                    error: function () {
+                        checkbox.prop('checked', !isChecked); // revert
+                        toastr.error("An error occurred while updating approval status.");
+                    }
+                });
+            });
+        });
+    </script>
+}

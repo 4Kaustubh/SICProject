@@ -1,0 +1,98 @@
+﻿@model SICProject.Models.RegistrationmasterVM
+
+@{
+    ViewData["Title"] = "Registration";
+}
+<div class="row p-1">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible rounded-0 border-dark text-dark fw-bold" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible rounded-0 border-dark text-dark fw-bold" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+</div>
+
+<div class="container-fluid mt-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0"><i class="bi bi-person-plus-fill me-2"></i>New Registration</h4>
+        </div>
+       
+        <div class="card-body">
+            <form asp-action="Registration">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="StudentName" class="form-label"></label>
+                    <input asp-for="StudentName" class="form-control" />
+                    <span asp-validation-for="StudentName" class="text-danger"></span>
+                </div>
+
+                @*  <div class="mb-3">
+                <label asp-for="DepartmentId" class="form-label"></label>
+                <input asp-for="DepartmentId" class="form-control" />
+                <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                </div> *@
+
+                <div class="mb-3">
+                    <label asp-for="DepartmentName" class="form-label"></label>
+                    <select asp-for="DepartmentId" asp-items="ViewBag.Departments" class="form-select" id="CatId">
+                        <option value="">-- Select a Department Name --</option>
+                    </select>
+                    <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ConfirmAppEmailId" class="form-label"></label>
+                    <input asp-for="ConfirmAppEmailId" class="form-control" />
+                    <span asp-validation-for="ConfirmAppEmailId" class="text-danger"></span>
+                </div>
+
+                @*  <div class="mb-3">
+                <label asp-for="IsApproved" class="form-label"></label>
+                <select asp-for="IsApproved" class="form-select">
+                <option value="">-- Select --</option>
+                <option value="true">Approved</option>
+                <option value="false">Not Approved</option>
+                </select>
+                <span asp-validation-for="IsApproved" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                <label asp-for="Remarks" class="form-label"></label>
+                <input asp-for="Remarks" class="form-control" />
+                <span asp-validation-for="Remarks" class="text-danger"></span>
+                </div> *@
+
+                <div class="mb-3">
+                    <label asp-for="MobileNumber" class="form-label"></label>
+                    <input asp-for="MobileNumber" class="form-control" />
+                    <span asp-validation-for="MobileNumber" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-success mx-2">
+                        <i class="bi bi-check-circle-fill me-1"></i> Submit
+                    </button> @* |
+                    <a asp-action="Index" class="btn btn-warning mx-2">
+                        <i class="bi bi-arrow-left-circle me-1"></i> Back to List
+                    </a> *@
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
