@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SICProject.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
 
 namespace SICProject.Controllers
 {
@@ -54,10 +56,46 @@ namespace SICProject.Controllers
             {
                 return NotFound();
             }
+
             var departmentVM = _mapper.Map<DepartmentmasterVM>(department);
             return View(departmentVM);
-         
         }
+
+        [HttpPost]
+        public IActionResult Edit(DepartmentmasterVM departmentmaster)
+        {
+            if (ModelState.IsValid)
+            {
+                var department = _db.Departmentmasters.FirstOrDefault(d => d.DepartmentId == departmentmaster.DepartmentId);
+                if (department == null)
+                {
+                    return NotFound();
+                }
+
+                // ✅ Correct mapping: into the existing tracked entity
+                _mapper.Map(departmentmaster, department);
+
+                _db.SaveChanges();
+
+                TempData["Success"] = "Department updated successfully!";
+                return RedirectToAction("ListOfDepartment");
+            }
+
+            TempData["Error"] = "Please check all fields carefully.";
+            return View(departmentmaster);
+        }
+        public IActionResult Delete(int id)
+        {
+            var department = _db.Departmentmasters.FirstOrDefault(d => d.DepartmentId == id);
+            if (department == null)
+            {
+                return NotFound();
+            }
+            _db.Departmentmasters.Remove(department);
+            _db.SaveChanges();
+            TempData["success"] = "Department Deleted Successfully";
+            return RedirectToAction("ListOfDepartment");
+        }   
         public IActionResult ListOfStudent()
         {
             var students = _db.Registrationmasters.ToList();
@@ -71,6 +109,46 @@ namespace SICProject.Controllers
                 }
             }
             return View(stdList);
+        }
+        public IActionResult EditStudent(int id)
+        {
+            var student = _db.Registrationmasters.FirstOrDefault(s => s.RegistrationId == id);
+            if (student == null)
+            {
+                return NotFound();
+            }
+
+            var studentVM = _mapper.Map<RegistrationmasterVM>(student);
+            ViewBag.Departments = new SelectList(_db.Departmentmasters.ToList(), "DepartmentId", "DepartmentName", student.DepartmentId);
+
+            return View("EditStudent", studentVM);
+
+        }
+        [HttpPost]
+        public IActionResult EditStudent(RegistrationmasterVM studentVM)
+        {
+            if (ModelState.IsValid)
+            {
+                var student = _db.Registrationmasters.FirstOrDefault(s => s.RegistrationId == studentVM.RegistrationId);
+                if (student == null)
+                {
+                    return NotFound();
+                }
+
+                // Map updated values into existing entity
+                _mapper.Map(studentVM, student);
+
+                _db.SaveChanges();
+
+                TempData["Success"] = "Student updated successfully!";
+                return RedirectToAction("ListOfStudent");
+            }
+
+            // Repopulate departments in case of error
+            ViewBag.Departments = new SelectList(_db.Departmentmasters.ToList(), "DepartmentId", "DepartmentName", studentVM.DepartmentId);
+            TempData["Error"] = "Please check all fields carefully.";
+            return View("EditStudent", studentVM);
+
         }
 
         [HttpPost]

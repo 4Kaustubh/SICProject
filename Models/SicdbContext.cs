@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql.Scaffolding.Internal;
+using SICProject.Models;
 
 namespace SICProject.Models;
 
@@ -78,4 +79,8 @@ public partial class SicdbContext : DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+public DbSet<SICProject.Models.DepartmentmasterVM> DepartmentmasterVM { get; set; } = default!;
+
+public DbSet<SICProject.Models.RegistrationmasterVM> RegistrationmasterVM { get; set; } = default!;
 }
