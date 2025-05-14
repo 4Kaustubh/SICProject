@@ -112,6 +112,8 @@ namespace SICProject.Controllers
         }
         public IActionResult EditStudent(int id)
         {
+            var Departments = _db.Departmentmasters.ToList();
+            ViewBag.Departments = new SelectList(Departments, "DepartmentId", "DepartmentName");
             var student = _db.Registrationmasters.FirstOrDefault(s => s.RegistrationId == id);
             if (student == null)
             {
@@ -127,6 +129,14 @@ namespace SICProject.Controllers
         [HttpPost]
         public IActionResult EditStudent(RegistrationmasterVM studentVM)
         {
+            var std = _db.Registrationmasters.FirstOrDefault(s => s.RegistrationId == studentVM.RegistrationId);
+            studentVM.ConfirmAppEmailId = studentVM.Email;
+            if (std == null)
+            {
+				return NotFound();
+			}   
+            studentVM.IsApproved = std.IsApproved == 1UL ? true : false;
+
             if (ModelState.IsValid)
             {
                 var student = _db.Registrationmasters.FirstOrDefault(s => s.RegistrationId == studentVM.RegistrationId);
