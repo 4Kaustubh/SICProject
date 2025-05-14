@@ -83,4 +83,6 @@ public partial class SicdbContext : DbContext
 public DbSet<SICProject.Models.DepartmentmasterVM> DepartmentmasterVM { get; set; } = default!;
 
 public DbSet<SICProject.Models.RegistrationmasterVM> RegistrationmasterVM { get; set; } = default!;
+
+public DbSet<SICProject.Models.loginVM> loginVM { get; set; } = default!;
 }

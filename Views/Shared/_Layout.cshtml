@@ -61,7 +61,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Staff" asp-action="logout">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="logout">
                                     <i class="bi bi-box-arrow-right"></i> Logout
                                 </a>
                             </li>
@@ -69,7 +69,7 @@
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Staff" asp-action="login">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="login">
                                     <i class="bi bi-box-arrow-in-right"></i> Login
                                 </a>
                             </li>
@@ -85,14 +85,17 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - SICProject -
-            <a asp-area="" asp-controller="Home" asp-action="Privacy">
-                <i class="bi bi-shield-check"></i> Privacy
-            </a>
+    <footer class="border-top footer bg-light py-0 mt-auto">
+        <div class="container text-center">
+            <span class="text-muted">
+                &copy; 2025 - <strong>SICProject</strong> &nbsp;|&nbsp;
+                <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-decoration-none text-muted">
+                    <i class="bi bi-shield-check me-1"></i> Privacy Policy
+                </a>
+            </span>
         </div>
     </footer>
+
 
     <!-- JS Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

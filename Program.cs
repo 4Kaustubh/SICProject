@@ -14,6 +14,23 @@ builder.Services.AddDbContext<SicdbContext>(options =>
 // Register AutoMapper with the DI system
 builder.Services.AddAutoMapper(typeof(ApplicationMapper)); // or specify all profiles via assembly scanning
 
+//setup session in project
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(45); // Set session timeout
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    //options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Use Secure cookies in production
+});
+
+//builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
+builder.Services.AddAuthentication("CookieAuth")
+           .AddCookie("CookieAuth", options =>
+           {
+               options.LoginPath = "/Home/login";
+               options.AccessDeniedPath = "/Home/login";
+           });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -28,6 +45,10 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseSession();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseAuthorization();
 

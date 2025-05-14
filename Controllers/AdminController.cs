@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SICProject.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace SICProject.Controllers
 {
+    [Authorize]
     public class AdminController : Controller
     {
         private readonly SicdbContext _db;
@@ -95,7 +97,7 @@ namespace SICProject.Controllers
             _db.SaveChanges();
             TempData["success"] = "Department Deleted Successfully";
             return RedirectToAction("ListOfDepartment");
-        }   
+        }
         public IActionResult ListOfStudent()
         {
             var students = _db.Registrationmasters.ToList();
@@ -121,36 +123,54 @@ namespace SICProject.Controllers
             }
 
             var studentVM = _mapper.Map<RegistrationmasterVM>(student);
-            ViewBag.Departments = new SelectList(_db.Departmentmasters.ToList(), "DepartmentId", "DepartmentName", student.DepartmentId);
-
+            studentVM.ConfirmAppEmailId = student.Email;
             return View("EditStudent", studentVM);
 
         }
         [HttpPost]
         public IActionResult EditStudent(RegistrationmasterVM registrationmaster)
-		{
-			if (ModelState.IsValid)
-			{
-				var student = _db.Registrationmasters.FirstOrDefault(s => s.RegistrationId == registrationmaster.RegistrationId);
-				if (student == null)
-				{
-					return NotFound();
-				}
+        {
+            var std = _db.Registrationmasters.FirstOrDefault(s => s.RegistrationId == registrationmaster.RegistrationId);
+            var Department = _db.Departmentmasters.FirstOrDefault(x => x.DepartmentId == registrationmaster.DepartmentId);
+            if (Department != null)
+            {
+                registrationmaster.DepartmentName = Department.DepartmentName;
+            }
+            if (std != null)
+            {
+                registrationmaster.Password = std.Password;
+                registrationmaster.Remarks = std.Remarks;
+                registrationmaster.IsApproved = std.IsApproved == null ? (bool?)null :
+                                  std.IsApproved == 1 ? true :
+                                  std.IsApproved == 0 ? false : (bool?)null;
 
-				// ✅ Correct mapping: into the existing tracked entity
-				_mapper.Map(registrationmaster, student);
+            }
+            registrationmaster.ConfirmAppEmailId = registrationmaster.Email;
 
-				_db.SaveChanges();
+            if (ModelState.IsValid)
+            {
+                var student = _db.Registrationmasters.FirstOrDefault(s => s.RegistrationId == registrationmaster.RegistrationId);
+                if (student == null)
+                {
+                    return NotFound();
+                }
 
-				TempData["Success"] = "Student updated successfully!";
-				return RedirectToAction("ListOfStudent");
-			}
+                // ✅ Correct mapping: into the existing tracked entity
+                _mapper.Map(registrationmaster, student);
 
-			TempData["Error"] = "Please check all fields carefully.";
-			return View(registrationmaster);
-		}
+                _db.SaveChanges();
 
-		[HttpPost]
+                TempData["Success"] = "Student updated successfully!";
+                return RedirectToAction("ListOfStudent");
+            }
+
+            var Departments = _db.Departmentmasters.ToList();
+            ViewBag.Departments = new SelectList(Departments, "DepartmentId", "DepartmentName");
+            TempData["Error"] = "Please check all fields carefully.";
+            return View(registrationmaster);
+        }
+
+        [HttpPost]
         public IActionResult ToggleApproval(int id, bool isApproved)
         {
             var student = _db.Registrationmasters.FirstOrDefault(x => x.RegistrationId == id);
@@ -159,7 +179,7 @@ namespace SICProject.Controllers
                 return NotFound();
             }
 
-            student.IsApproved = isApproved ? 1UL : 0UL; 
+            student.IsApproved = isApproved ? 1UL : 0UL;
             _db.SaveChanges();
 
             return Json(new { success = true, message = "Approval status updated." });

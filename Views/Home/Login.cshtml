@@ -1,7 +1,81 @@
-﻿
+﻿@model SICProject.Models.loginVM
+
 @{
     ViewData["Title"] = "Login";
 }
 
-<h1>Login</h1>
 
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header text-center">
+                    <h4><i class="bi bi-box-arrow-in-right"></i> Sign In</h4>
+                </div>
+                @if (TempData["Success"] != null || TempData["Error"] != null)
+                {
+                    <div class="row p-3 pt-2">
+                        <div class="col">
+                            @if (TempData["Success"] != null)
+                            {
+                                <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm" role="alert">
+                                    <i class="bi bi-check-circle-fill me-2"></i>
+                                    <strong>Success:</strong> @TempData["Success"]
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            }
+                            @if (TempData["Error"] != null)
+                            {
+                                <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                    <strong>Error:</strong> @TempData["Error"]
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <div class="card-body">
+                    <form asp-action="Login" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label"><i class="bi bi-envelope-fill me-1"></i> Email</label>
+                            <input asp-for="Email" class="form-control" placeholder="Enter your email" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="AppPwd" class="form-label"><i class="bi bi-lock-fill me-1"></i> Password</label>
+                            <input asp-for="AppPwd" type="password" class="form-control" placeholder="Enter your password" />
+                            <span asp-validation-for="AppPwd" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="RememberMe" name="RememberMe" />
+                            <label class="form-check-label" for="RememberMe">
+                                Remember Me
+                            </label>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-door-open me-1"></i> Login
+                            </button>
+                        </div>
+
+                        <div class="mt-3 text-center">
+                            <a asp-action="forgetPassword" asp-controller="Home" class="me-3">
+                                <i class="bi bi-key-fill me-1"></i> Forgot Password?
+                            </a>
+                            <a asp-action="changePassword" asp-controller="Home">
+                                <i class="bi bi-shield-lock-fill me-1"></i> Change Password
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

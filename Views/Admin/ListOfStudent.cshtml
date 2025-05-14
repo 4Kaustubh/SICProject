@@ -32,6 +32,7 @@
         <table class="table table-bordered table-striped table-hover align-middle">
             <thead class="table-light">
                 <tr>
+                    <th>#</th>
                     <th>@Html.DisplayNameFor(model => model.First().StudentName)</th>
 
                     <th>@Html.DisplayNameFor(model => model.First().DepartmentName)</th>
@@ -41,10 +42,14 @@
                     <th>Actions</th>
                 </tr>
             </thead>
+            @{
+                int i = 1;
+            }
             <tbody>
                 @foreach (var item in Model)
                 {
                     <tr>
+                        <td>@i</td>
                         <td>@Html.DisplayFor(modelItem => item.StudentName)</td>
                         <td>@Html.DisplayFor(modelItem => item.DepartmentName)</td>
                         <td>@Html.DisplayFor(modelItem => item.Email)</td>
@@ -68,6 +73,7 @@
                             </a>
                         </td>
                     </tr>
+                    i++;
                 }
             </tbody>
         </table>
