@@ -127,41 +127,30 @@ namespace SICProject.Controllers
 
         }
         [HttpPost]
-        public IActionResult EditStudent(RegistrationmasterVM studentVM)
-        {
-            var std = _db.Registrationmasters.FirstOrDefault(s => s.RegistrationId == studentVM.RegistrationId);
-            studentVM.ConfirmAppEmailId = studentVM.Email;
-            if (std == null)
-            {
-				return NotFound();
-			}   
-            studentVM.IsApproved = std.IsApproved == 1UL ? true : false;
+        public IActionResult EditStudent(RegistrationmasterVM registrationmaster)
+		{
+			if (ModelState.IsValid)
+			{
+				var student = _db.Registrationmasters.FirstOrDefault(s => s.RegistrationId == registrationmaster.RegistrationId);
+				if (student == null)
+				{
+					return NotFound();
+				}
 
-            if (ModelState.IsValid)
-            {
-                var student = _db.Registrationmasters.FirstOrDefault(s => s.RegistrationId == studentVM.RegistrationId);
-                if (student == null)
-                {
-                    return NotFound();
-                }
+				// ✅ Correct mapping: into the existing tracked entity
+				_mapper.Map(registrationmaster, student);
 
-                // Map updated values into existing entity
-                _mapper.Map(studentVM, student);
+				_db.SaveChanges();
 
-                _db.SaveChanges();
+				TempData["Success"] = "Student updated successfully!";
+				return RedirectToAction("ListOfStudent");
+			}
 
-                TempData["Success"] = "Student updated successfully!";
-                return RedirectToAction("ListOfStudent");
-            }
+			TempData["Error"] = "Please check all fields carefully.";
+			return View(registrationmaster);
+		}
 
-            // Repopulate departments in case of error
-            ViewBag.Departments = new SelectList(_db.Departmentmasters.ToList(), "DepartmentId", "DepartmentName", studentVM.DepartmentId);
-            TempData["Error"] = "Please check all fields carefully.";
-            return View("EditStudent", studentVM);
-
-        }
-
-        [HttpPost]
+		[HttpPost]
         public IActionResult ToggleApproval(int id, bool isApproved)
         {
             var student = _db.Registrationmasters.FirstOrDefault(x => x.RegistrationId == id);
