@@ -4,22 +4,39 @@
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+  
+</div>
+<h2 class="text-center">Scientific Instruments</h2>
+
+<div class="card mb-3">
+    <div class="card-header bg-primary text-white">
+        IR Spectrometer (IR-3000)
+    </div>
+    <div class="card-body">
+        <p><strong>Manufacturer:</strong> Shimadzu</p>
+        <p><strong>Description:</strong> Infrared Spectrometer used to analyze molecular vibrations and functional groups in organic compounds. Commonly used in qualitative analysis and structural determination.</p>
+        <p><strong>Status:</strong> Available</p>
+    </div>
 </div>
 
-<div class="row p-1">
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success alert-dismissible rounded-0 border-dark text-dark fw-bold" role="alert">
-            @TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    }
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible rounded-0 border-dark text-dark fw-bold" role="alert">
-            @TempData["Error"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    }
+<div class="card mb-3">
+    <div class="card-header bg-success text-white">
+        HPLC System (LC-20AD)
+    </div>
+    <div class="card-body">
+        <p><strong>Manufacturer:</strong> Shimadzu</p>
+        <p><strong>Description:</strong> High-Performance Liquid Chromatography system used to separate, identify, and quantify components in a liquid mixture. Vital for pharmaceutical and chemical research.</p>
+        <p><strong>Status:</strong> Under Maintenance</p>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header bg-warning text-dark">
+        UV-1800 Spectrophotometer
+    </div>
+    <div class="card-body">
+        <p><strong>Manufacturer:</strong> Shimadzu</p>
+        <p><strong>Description:</strong> UV-Vis Spectrophotometer used to measure absorbance and transmittance of samples in the ultraviolet and visible range. Common in chemical and biological labs.</p>
+        <p><strong>Status:</strong> Available</p>
+    </div>
 </div>
