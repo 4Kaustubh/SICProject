@@ -184,5 +184,85 @@ namespace SICProject.Controllers
 
             return Json(new { success = true, message = "Approval status updated." });
         }
+        //----------------------------Holiday start----------------------------//
+        public IActionResult ListOfHoliday()
+        {
+            var holidays = _db.Holidaymasters.ToList();
+            return View(holidays);
+        }
+
+        public IActionResult AddHoliday()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult AddHoliday(HolidaymasterVM holidaymaster       )
+        {
+            if (ModelState.IsValid)
+            {
+                Holidaymaster holiday = new Holidaymaster();
+                holiday = _mapper.Map<Holidaymaster>(holidaymaster);
+                _db.Holidaymasters.Add(holiday);
+                _db.SaveChanges();
+                if (holiday.HolidayId > 0)
+                {
+                    TempData["success"] = "Holiday Added Successfully";
+                }
+                else
+                {
+                    TempData["error"] = "Holiday Addition Failed";
+                }
+                return RedirectToAction("ListOfHoliday");
+            }
+            TempData["error"] = "Please check all fields carefully.";
+            return View(holidaymaster);
+        }
+        public IActionResult EditHoliday(int id)
+        {
+            var holiday = _db.Holidaymasters.FirstOrDefault(d => d.HolidayId == id);
+            if (holiday == null)
+            {
+                return NotFound();
+            }
+
+            var holidayVM = _mapper.Map<HolidaymasterVM>(holiday);
+            return View(holidayVM);
+        }
+        [HttpPost]
+        public IActionResult EditHoliday(HolidaymasterVM holidaymaster)
+        {
+            if (ModelState.IsValid)
+            {
+                var holiday = _db.Holidaymasters.FirstOrDefault(d => d.HolidayId == holidaymaster.HolidayId);
+                if (holiday == null)
+                {
+                    return NotFound();
+                }
+
+                // ✅ Correct mapping: into the existing tracked entity
+                _mapper.Map(holidaymaster, holiday);
+
+                _db.SaveChanges();
+
+                TempData["Success"] = "Holiday updated successfully!";
+                return RedirectToAction("ListOfHoliday");
+            }
+
+            TempData["Error"] = "Please check all fields carefully.";
+            return View(holidaymaster);
+        }   
+        public IActionResult DeleteHoliday(int id)
+        {
+            var holiday = _db.Holidaymasters.FirstOrDefault(d => d.HolidayId == id);
+            if (holiday == null)
+            {
+                return NotFound();
+            }
+            _db.Holidaymasters.Remove(holiday);
+            _db.SaveChanges();
+            TempData["success"] = "Holiday Deleted Successfully";
+            return RedirectToAction("ListOfHoliday");
+        }
+        //-----------------------------Holiday end----------------------------//
     }
 }

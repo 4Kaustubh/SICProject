@@ -9,6 +9,8 @@ namespace SICProject.Helper
         {
             CreateMap<Departmentmaster, DepartmentmasterVM>().ReverseMap();
             CreateMap<Registrationmaster, RegistrationmasterVM>().ReverseMap();
+            CreateMap<Instrumentsmaster, InstrumentsmasterVM>().ReverseMap();
+            CreateMap<Holidaymaster, HolidaymasterVM>().ReverseMap();
         }
     }
 }

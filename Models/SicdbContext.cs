@@ -19,6 +19,8 @@ public partial class SicdbContext : DbContext
 
     public virtual DbSet<Departmentmaster> Departmentmasters { get; set; }
 
+    public virtual DbSet<Holidaymaster> Holidaymasters { get; set; }
+
     public virtual DbSet<Instrumentsmaster> Instrumentsmasters { get; set; }
 
     public virtual DbSet<Registrationmaster> Registrationmasters { get; set; }
@@ -39,6 +41,16 @@ public partial class SicdbContext : DbContext
             entity.Property(e => e.DepartmentId).HasColumnType("int(11)");
             entity.Property(e => e.DepartmentName).HasMaxLength(250);
             entity.Property(e => e.Remarks).HasMaxLength(250);
+        });
+
+        modelBuilder.Entity<Holidaymaster>(entity =>
+        {
+            entity.HasKey(e => e.HolidayId).HasName("PRIMARY");
+
+            entity.ToTable("holidaymaster");
+
+            entity.Property(e => e.HolidayId).HasColumnType("int(11)");
+            entity.Property(e => e.Reson).HasMaxLength(150);
         });
 
         modelBuilder.Entity<Instrumentsmaster>(entity =>
@@ -80,9 +92,5 @@ public partial class SicdbContext : DbContext
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
-public DbSet<SICProject.Models.DepartmentmasterVM> DepartmentmasterVM { get; set; } = default!;
-
-public DbSet<SICProject.Models.RegistrationmasterVM> RegistrationmasterVM { get; set; } = default!;
-
-public DbSet<SICProject.Models.loginVM> loginVM { get; set; } = default!;
+public DbSet<SICProject.Models.HolidaymasterVM> HolidaymasterVM { get; set; } = default!;
 }
