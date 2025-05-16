@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql.Scaffolding.Internal;
-using SICProject.Models;
 
 namespace SICProject.Models;
 
@@ -16,6 +15,8 @@ public partial class SicdbContext : DbContext
         : base(options)
     {
     }
+
+    public virtual DbSet<Bookingmaster> Bookingmasters { get; set; }
 
     public virtual DbSet<Departmentmaster> Departmentmasters { get; set; }
 
@@ -31,6 +32,23 @@ public partial class SicdbContext : DbContext
         modelBuilder
             .UseCollation("utf8mb4_general_ci")
             .HasCharSet("utf8mb4");
+
+        modelBuilder.Entity<Bookingmaster>(entity =>
+        {
+            entity.HasKey(e => e.BookingId).HasName("PRIMARY");
+
+            entity.ToTable("bookingmaster");
+
+            entity.Property(e => e.BookingId).HasColumnType("int(11)");
+            entity.Property(e => e.InstrumentId).HasColumnType("int(11)");
+            entity.Property(e => e.Remarks)
+                .HasMaxLength(250)
+                .UseCollation("utf8_general_ci")
+                .HasCharSet("utf8");
+            entity.Property(e => e.SlotEnd).HasColumnType("time");
+            entity.Property(e => e.SlotStart).HasColumnType("time");
+            entity.Property(e => e.StudentId).HasColumnType("int(11)");
+        });
 
         modelBuilder.Entity<Departmentmaster>(entity =>
         {
@@ -91,8 +109,4 @@ public partial class SicdbContext : DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-
-public DbSet<SICProject.Models.HolidaymasterVM> HolidaymasterVM { get; set; } = default!;
-
-public DbSet<SICProject.Models.InstrumentsmasterVM> InstrumentsmasterVM { get; set; } = default!;
 }

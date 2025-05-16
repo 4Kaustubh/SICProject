@@ -135,6 +135,21 @@ namespace SICProject.Controllers
 
         public IActionResult dashboard()
         {
+            var userSession = HttpContext.Session.GetString("UserSession");
+            var userEmail = HttpContext.Session.GetString("User");
+            var userPwd = HttpContext.Session.GetString("AppPwd");
+            if (string.IsNullOrEmpty(userSession) || string.IsNullOrEmpty(userEmail) || string.IsNullOrEmpty(userPwd))
+            {
+                return RedirectToAction("login", "Home");
+            }
+            var studentUser = _db.Registrationmasters.FirstOrDefault(x => x.Email == userEmail && x.Password == userPwd);
+            if (studentUser == null)
+            {
+                return RedirectToAction("login", "Home");
+            }
+            // Get the list of All Booking as per student from the database
+            var AllBooking = _db.Bookingmasters.Where(x => x.StudentId == studentUser.RegistrationId).ToList();
+            ViewBag.AllBooking = AllBooking;
             return View();
         }
         public IActionResult Logout()

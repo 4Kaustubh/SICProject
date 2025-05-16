@@ -7,6 +7,46 @@
         <h1>Welcome to the Dashboard</h1>
         <p class="lead">This is your central hub to manage all activities.</p>
         <hr />
-        <p>You can view your data, access reports, manage users, and much more from here.</p>
+        @{
+            var bookings = ViewBag.AllBooking as IEnumerable<dynamic>;
+            int serial = 1;
+        }
+
+        @if (bookings != null)
+        {
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="m-0">Booking Details</h2>
+                <a asp-action="AddBooking" class="btn btn-success">
+                    <i class="bi bi-calendar-plus"></i> New Booking Slot
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Booking ID</th>
+                            <th>Customer Name</th>
+                            <th>Booking Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var booking in bookings)
+                        {
+                            <tr>
+                                <td>@serial</td>
+                                <td>@booking.BookingId</td>
+                                <td>@booking.CustomerName</td>
+                                <td>@booking.BookingDate.ToString("dd/MM/yyyy")</td>
+                                <td>@booking.Status</td>
+                            </tr>
+                            serial++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
     </div>
 </div>
