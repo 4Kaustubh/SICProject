@@ -93,4 +93,6 @@ public partial class SicdbContext : DbContext
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
 public DbSet<SICProject.Models.HolidaymasterVM> HolidaymasterVM { get; set; } = default!;
+
+public DbSet<SICProject.Models.InstrumentsmasterVM> InstrumentsmasterVM { get; set; } = default!;
 }

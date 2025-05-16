@@ -98,6 +98,8 @@ namespace SICProject.Controllers
             TempData["success"] = "Department Deleted Successfully";
             return RedirectToAction("ListOfDepartment");
         }
+        //---------------------------- Department end---------------------------//
+        //---------------------------- Student start---------------------------//
         public IActionResult ListOfStudent()
         {
             var students = _db.Registrationmasters.ToList();
@@ -183,7 +185,89 @@ namespace SICProject.Controllers
             _db.SaveChanges();
 
             return Json(new { success = true, message = "Approval status updated." });
+           
         }
+        //---------------------------- Student end---------------------------//
+        //--------------------------- Instruments start---------------------------//
+        public IActionResult ListOfInstruments()
+        {
+            var instruments = _db.Instrumentsmasters.ToList();
+            return View(instruments);
+        }
+        public IActionResult AddInstruments()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult AddInstruments(InstrumentsmasterVM instrumentsmaster)
+        {
+            if (ModelState.IsValid)
+            {
+                Instrumentsmaster instruments = new Instrumentsmaster();
+                instruments = _mapper.Map<Instrumentsmaster>(instrumentsmaster);
+                _db.Instrumentsmasters.Add(instruments);
+                _db.SaveChanges();
+                if (instruments.InstrumentsId > 0)
+                {
+                    TempData["success"] = "Instrument Added Successfully";
+                }
+                else
+                {
+                    TempData["error"] = "Instrument Addition Failed";
+                }
+                return RedirectToAction("ListOfInstruments");
+            }
+            TempData["error"] = "Please check all fields carefully.";
+            return View(instrumentsmaster);
+        }
+
+        public IActionResult EditInstruments(int id)
+        {
+            var instruments = _db.Instrumentsmasters.FirstOrDefault(d => d.InstrumentsId == id);
+            if (instruments == null)
+            {
+                return NotFound();
+            }
+
+            var instrumentsVM = _mapper.Map<InstrumentsmasterVM>(instruments);
+            return View(instrumentsVM);
+        }
+        [HttpPost]
+        public IActionResult EditInstruments(InstrumentsmasterVM instrumentsmaster)
+        {
+            if (ModelState.IsValid)
+            {
+                var instruments = _db.Instrumentsmasters.FirstOrDefault(d => d.InstrumentsId == instrumentsmaster.InstrumentsId);
+                if (instruments == null)
+                {
+                    return NotFound();
+                }
+
+                // ✅ Correct mapping: into the existing tracked entity
+                _mapper.Map(instrumentsmaster, instruments);
+
+                _db.SaveChanges();
+
+                TempData["Success"] = "Instrument updated successfully!";
+                return RedirectToAction("ListOfInstruments");
+            }
+
+            TempData["Error"] = "Please check all fields carefully.";
+            return View(instrumentsmaster);
+        }
+        public IActionResult DeleteInstruments(int id)
+        {
+            var instruments = _db.Instrumentsmasters.FirstOrDefault(d => d.InstrumentsId == id);
+            if (instruments == null)
+            {
+                return NotFound();
+            }
+            _db.Instrumentsmasters.Remove(instruments);
+            _db.SaveChanges();
+            TempData["success"] = "Instrument Deleted Successfully";
+            return RedirectToAction("ListOfInstruments");
+        }
+        //--------------------------- Instruments end---------------------------//
         //----------------------------Holiday start----------------------------//
         public IActionResult ListOfHoliday()
         {

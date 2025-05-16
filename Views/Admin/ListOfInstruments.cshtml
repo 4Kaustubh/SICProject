@@ -1,0 +1,109 @@
+﻿@model IEnumerable<SICProject.Models.Instrumentsmaster>
+
+@{
+    ViewData["Title"] = "List of Instruments";
+    int i = 1;
+}
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="bi bi-hammer me-2"></i> List of Instruments</h2>
+        <a asp-action="AddInstruments" class="btn btn-success">
+            <i class="bi bi-plus-circle me-1"></i> Add Instrument
+        </a>
+    </div>
+
+    <div class="row p-1">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show border-dark text-dark fw-bold" role="alert">
+                @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show border-dark text-dark fw-bold" role="alert">
+                @TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>@Html.DisplayNameFor(model => model.First().InstrumentName)</th>
+                    <th>@Html.DisplayNameFor(model => model.First().Remarks)</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@i</td>
+                        <td>@item.InstrumentName</td>
+                        <td>@item.Remarks</td>
+                        <td class="text-center text-nowrap">
+                            <a asp-action="EditInstruments" asp-route-id="@item.InstrumentsId" class="btn btn-sm btn-primary me-1" title="Edit">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <button type="button"
+                                    class="btn btn-sm btn-danger"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteModal"
+                                    data-id="@item.InstrumentsId"
+                                    data-name="@item.InstrumentName">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    i++;
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-danger">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete <strong id="instrumentName"></strong>?
+            </div>
+            <div class="modal-footer">
+                <form method="post" asp-action="DeleteInstruments">
+                    <input type="hidden" name="id" id="deleteInstrumentId" />
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section MyJsScripts {
+    <script>
+        const deleteModal = document.getElementById('deleteModal');
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const instrumentId = button.getAttribute('data-id');
+            const instrumentName = button.getAttribute('data-name');
+
+            const inputId = deleteModal.querySelector('#deleteInstrumentId');
+            const nameDisplay = deleteModal.querySelector('#instrumentName');
+
+            inputId.value = instrumentId;
+            nameDisplay.textContent = instrumentName;
+        });
+    </script>
+}
