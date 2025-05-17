@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using SICProject.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
+using System.Linq;
 
 
 namespace SICProject.Controllers
@@ -19,23 +20,60 @@ namespace SICProject.Controllers
             _mapper = mapper;
         }
         //------------------------------Booking start------------------------------//
-        public IActionResult ListOfBooking()
+        public IActionResult SelectInstrumentOrStudent()
         {
-            var bookings = _db.Bookingmasters.ToList();
-            List<BookingmasterVM> bookingList = _mapper.Map(bookings, new List<BookingmasterVM>());
-            foreach (var booking in bookingList)
-            {
-                var student = _db.Registrationmasters.FirstOrDefault(s => s.RegistrationId == booking.StudentId);
-                if (student != null)
-                {
-                    booking.StudentName = student.StudentName;
-                }
-            }
-            return View(bookingList);
+            ViewBag.Instruments = _db.Instrumentsmasters.Select(i => new SelectListItem { Value = i.InstrumentsId.ToString(), Text = i.InstrumentName })
+                .ToList();
+            ViewBag.Students = _db.Registrationmasters.Select(s => new SelectListItem { Value = s.RegistrationId.ToString(), Text = s.StudentName })
+                .ToList();
+            return View();
         }
-        //------------------------------Booking end------------------------------//
-        //---------------------------- Department start---------------------------//
-        public IActionResult ListOfDepartment()
+
+        [HttpPost]
+        public IActionResult ListOfBooking(int? InstrumentId, int? StudentId)
+        {
+            if ((InstrumentId == null || InstrumentId == 0) && (StudentId == null || StudentId == 0))
+            {
+                TempData["error"] = "Please select at least one option: Instrument or Student.";
+                return RedirectToAction("SelectInstrumentOrStudent");
+            }
+
+            var bookings = _db.Bookingmasters
+                .Where(b =>
+                    (InstrumentId == null || InstrumentId == 0 || b.InstrumentId == InstrumentId) &&
+                    (StudentId == null || StudentId == 0 || b.StudentId == StudentId))
+                .ToList();
+
+            // Load instruments and students dictionaries for lookup
+            var instruments = _db.Instrumentsmasters
+                .ToDictionary(i => i.InstrumentsId, i => i.InstrumentName);
+
+            var students = _db.Registrationmasters
+                .ToDictionary(s => s.RegistrationId, s => s.StudentName);
+
+            var bookingVMs = bookings.Select(b => new BookingmasterVM
+            {
+                BookingId = b.BookingId,
+                InstrumentId = b.InstrumentId,
+                InstrumentName = (b.InstrumentId.HasValue && instruments.ContainsKey(b.InstrumentId.Value))
+                       ? instruments[b.InstrumentId.Value]
+                       : "Unknown",
+                StudentId = b.StudentId,
+                StudentName = (b.StudentId.HasValue && students.ContainsKey(b.StudentId.Value))
+                    ? students[b.StudentId.Value]
+                    : "Unknown",
+                Remarks = b.Remarks,
+                BookingDate = b.BookingDate,
+                SlotStart = b.SlotStart,
+                SlotEnd = b.SlotEnd
+            }).ToList();
+
+            return View(bookingVMs);
+        }
+
+    //------------------------------Booking end------------------------------//
+    //---------------------------- Department start---------------------------//
+    public IActionResult ListOfDepartment()
         {
             var departments = _db.Departmentmasters.ToList();
             return View(departments);
@@ -202,7 +240,7 @@ namespace SICProject.Controllers
             _db.SaveChanges();
 
             return Json(new { success = true, message = "Approval status updated." });
-           
+
         }
         //---------------------------- Student end---------------------------//
         //--------------------------- Instruments start---------------------------//
@@ -297,7 +335,7 @@ namespace SICProject.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult AddHoliday(HolidaymasterVM holidaymaster       )
+        public IActionResult AddHoliday(HolidaymasterVM holidaymaster)
         {
             if (ModelState.IsValid)
             {
@@ -351,7 +389,7 @@ namespace SICProject.Controllers
 
             TempData["Error"] = "Please check all fields carefully.";
             return View(holidaymaster);
-        }   
+        }
         public IActionResult DeleteHoliday(int id)
         {
             var holiday = _db.Holidaymasters.FirstOrDefault(d => d.HolidayId == id);

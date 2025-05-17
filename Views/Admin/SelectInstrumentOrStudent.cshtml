@@ -1,0 +1,68 @@
+﻿@{
+    ViewData["Title"] = "Select Instrument or Student";
+}
+
+<div class="container mt-4">
+    <h2><i class="bi bi-search me-2"></i> Search Bookings</h2>
+    <br />
+    <div class="row p-1">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible rounded-0 border-dark text-dark fw-bold" role="alert">
+                @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible rounded-0 border-dark text-dark fw-bold" role="alert">
+                @TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+    </div>
+    <p class="text-muted">You can search by Instrument name, Ntudent name, or Both.</p>
+
+    @if (ViewBag.Instruments != null || ViewBag.Students != null)
+    {
+        <form asp-action="ListOfBooking" asp-controller="Admin" method="post" class="row g-3 shadow p-4 rounded bg-light">
+            <div class="col-md-6">
+                <label for="InstrumentId" class="form-label">
+                    <i class="bi bi-tools me-1"></i> Instrument Name
+                </label>
+                <select name="InstrumentId" id="InstrumentId" class="form-select">
+                    <option value="">-- Select Instrument --</option>
+                    @if (ViewBag.Instruments is List<SelectListItem> instruments)
+                    {
+                        foreach (var item in instruments)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label for="StudentId" class="form-label">
+                    <i class="bi bi-person-lines-fill me-1"></i> Student Name
+                </label>
+                <select name="StudentId" id="StudentId" class="form-select">
+                    <option value="">-- Select Student --</option>
+                    @if (ViewBag.Students is List<SelectListItem> students)
+                    {
+                        foreach (var item in students)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="col-12 text-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search me-1"></i> Search Bookings
+                </button>
+            </div>
+        </form>
+    }
+</div>

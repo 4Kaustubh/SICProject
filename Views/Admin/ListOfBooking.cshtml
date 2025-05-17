@@ -1,0 +1,79 @@
+﻿@model IEnumerable<SICProject.Models.BookingmasterVM>
+
+@{
+    ViewData["Title"] = "List of Bookings";
+    int i = 1;
+}
+
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-4">
+            <h2><i class="bi bi-journal-text me-2"></i> List of Bookings</h2>
+        </div>
+
+        <div class="col-8 text-end">
+            <a asp-controller="Admin" asp-action="SelectInstrumentOrStudent" class="btn btn-primary">
+                <i class="bi bi-search me-1"></i> Back to Search Bookings
+            </a>
+        </div>
+    </div>
+    <br />
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-1"></i> No bookings found.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive shadow-sm">
+            <table id="myTable" class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th><i class="bi bi-tools me-1"></i> Instrument Name</th>
+                        <th><i class="bi bi-person me-1"></i> Student Name</th>
+                        <th><i class="bi bi-chat-left-text me-1"></i> Remarks</th>
+                        <th><i class="bi bi-calendar-event me-1"></i> Booking Date</th>
+                        <th><i class="bi bi-clock me-1"></i> Slot Start</th>
+                        <th><i class="bi bi-clock-history me-1"></i> Slot End</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@i</td>
+                            <td>@item.InstrumentName</td>
+                            <td>@item.StudentName</td>
+                            <td>@item.Remarks</td>
+                            <td>@item.BookingDate?.ToString("dd-MM-yyyy")</td>
+                            <td>@item.SlotStart?.ToString(@"hh\:mm")</td>
+                            <td>@item.SlotEnd?.ToString(@"hh\:mm")</td>
+                        </tr>
+                        i++;
+                    }
+                   
+                </tbody>
+            </table>
+        </div>
+        <br />
+
+    }
+</div>
+@section MyCssScripts {
+    <link href="~/css/datatables.min.css" rel="stylesheet" />
+}
+
+
+@section MyJsScripts {
+    <script src="~/js/datatables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#myTable').DataTable({
+                "pageLength": 100
+            });
+        });
+    </script>
+}

@@ -28,7 +28,7 @@
     </div>
 
     <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover align-middle">
+        <table id="myTable" class="table table-bordered table-striped table-hover align-middle">
             <thead class="table-light">
                 <tr>
                     <th>#</th>
@@ -93,9 +93,20 @@
         </div>
     </div>
 </div>
+@section MyCssScripts {
+    <link href="~/css/datatables.min.css" rel="stylesheet" />
+}
+
 
 @section MyJsScripts {
+    <script src="~/js/datatables.min.js"></script>
     <script>
+        $(document).ready(function () {
+            $('#myTable').DataTable({
+                "pageLength": 100
+            });
+        });
+   
         const deleteModal = document.getElementById('deleteModal');
         deleteModal.addEventListener('show.bs.modal', function (event) {
             const button = event.relatedTarget;

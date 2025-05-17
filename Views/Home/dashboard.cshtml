@@ -37,15 +37,15 @@
                 }
             </div>
             <div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover align-middle">
+                <table id="myTable" class="table table-bordered table-striped table-hover align-middle">
                     <thead class="table-light">
                         <tr>
                             <th>#</th>
                             <th>Booking ID</th>
                             <th>Instrument Name</th>
-                   
+
                             <th>Booking Date</th>
-                         
+
                             <th>Slot Start</th>
                             <th>Slot End</th>
                         </tr>
@@ -58,7 +58,7 @@
                                 <td>@booking.BookingId</td>
                                 <td>@booking.InstrumentName</td>
                                 <td>@booking.BookingDate.ToString("dd/MM/yyyy")</td>
-                           
+
                                 <td>@booking.SlotStart</td>
                                 <td>@booking.SlotEnd</td>
                             </tr>
@@ -70,3 +70,17 @@
         }
     </div>
 </div>
+@section MyCssScripts {
+    <link href="~/css/datatables.min.css" rel="stylesheet" />
+}
+
+@section MyJsScripts {
+    <script src="~/js/datatables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#myTable').DataTable({
+                "pageLength": 100
+            });
+        });
+    </script>
+}
