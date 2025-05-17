@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace SICProject.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "admin")]
     public class AdminController : Controller
     {
         private readonly SicdbContext _db;

@@ -6,13 +6,14 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using SICProject.Models;
+using System.Data;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Security.Claims;
 
 namespace SICProject.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "admin,std")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -55,6 +56,7 @@ namespace SICProject.Controllers
 
                 reg.Password = CreatePassword();
                 reg.DepartmentName = _db.Departmentmasters.FirstOrDefault(d => d.DepartmentId == registrationmaster.DepartmentId)?.DepartmentName;
+                reg.Role = "std";
 
                 _db.Registrationmasters.Add(reg);
                 _db.SaveChanges();
@@ -112,7 +114,7 @@ namespace SICProject.Controllers
                 {
                     new Claim(ClaimTypes.Name, studentUser.StudentName??string.Empty)
                 };
-                //var userRoles = db.TblUsersRoles.Where(x => x.UserId == myUser.Id).ToList();
+                //var userRoles = _db.Registrationmasters.Where(x => x.RegistrationId == studentUser.RegistrationId).ToList();
                 //// Add role claims 
                 //if (userRoles.Any())
                 //{
@@ -121,6 +123,11 @@ namespace SICProject.Controllers
                 //        claims.Add(new Claim(ClaimTypes.Role, role.Role));
                 //    }
                 //}
+                if (studentUser.Role != null)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, studentUser.Role));
+                }
+
                 var claimsIdentity = new ClaimsIdentity(claims, "CookieAuth");
                 var authProperties = new AuthenticationProperties
                 {
@@ -184,17 +191,17 @@ namespace SICProject.Controllers
 
             if (booking == null || booking.InstrumentId == null)
             {
-                
+
                 return View(booking);
             }
 
             if (string.IsNullOrWhiteSpace(booking.Remarks))
             {
-               
+
                 return View(booking);
             }
 
-            var studentUser = _db.Registrationmasters.FirstOrDefault(x => x.Email == HttpContext.Session.GetString("User") && 
+            var studentUser = _db.Registrationmasters.FirstOrDefault(x => x.Email == HttpContext.Session.GetString("User") &&
                             x.Password == HttpContext.Session.GetString("AppPwd"));
 
             if (studentUser == null)

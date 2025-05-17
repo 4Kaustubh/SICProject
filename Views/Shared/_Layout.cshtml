@@ -38,7 +38,7 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        @if (User.Claims.Any())
+                        @if (User.IsInRole("admin"))
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-dark" id="navbarDropdownPrintReports" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -71,6 +71,14 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="SelectInstrumentOrStudent">
                                     <i class="bi bi-search me-1"></i> Search Bookings
+                                </a>
+                            </li>
+                        }
+                        @if (User.Claims.Any())
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Booking">
+                                    <i class="bi bi-person-plus-fill"></i> New Booking
                                 </a>
                             </li>
                         }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql.Scaffolding.Internal;
-using SICProject.Models;
 
 namespace SICProject.Models;
 
@@ -103,6 +102,7 @@ public partial class SicdbContext : DbContext
             entity.Property(e => e.MobileNumber).HasMaxLength(20);
             entity.Property(e => e.Password).HasMaxLength(45);
             entity.Property(e => e.Remarks).HasMaxLength(250);
+            entity.Property(e => e.Role).HasMaxLength(45);
             entity.Property(e => e.StudentName).HasMaxLength(250);
         });
 
@@ -110,6 +110,4 @@ public partial class SicdbContext : DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-
-public DbSet<SICProject.Models.BookingmasterVM> BookingmasterVM { get; set; } = default!;
 }
