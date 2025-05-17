@@ -8,7 +8,7 @@
         <p class="lead text-secondary">We’re glad to have you here!</p>
     </div>
 
-    <div class="mt-4">
+   @*  <div class="mt-4">
         <p class="fs-5 text-dark">
             This system is designed to streamline the process of booking and managing your sample requests efficiently.
         </p>
@@ -16,40 +16,24 @@
             Whether you're scheduling a test, submitting a request, or tracking the status of your bookings,
             our platform offers a user-friendly and reliable experience.
         </p>
-    </div>
+    </div> *@
 </div>
 <hr />
-<h2 class="text-center">Scientific Instruments</h2>
-
-<div class="card mb-3">
-    <div class="card-header bg-primary text-white">
-        IR Spectrometer (IR-3000)
-    </div>
-    <div class="card-body">
-        <p><strong>Manufacturer:</strong> Shimadzu</p>
-        <p><strong>Description:</strong> Infrared Spectrometer used to analyze molecular vibrations and functional groups in organic compounds. Commonly used in qualitative analysis and structural determination.</p>
-        <p><strong>Status:</strong> Available</p>
-    </div>
-</div>
-
-<div class="card mb-3">
-    <div class="card-header bg-success text-white">
-        HPLC System (LC-20AD)
-    </div>
-    <div class="card-body">
-        <p><strong>Manufacturer:</strong> Shimadzu</p>
-        <p><strong>Description:</strong> High-Performance Liquid Chromatography system used to separate, identify, and quantify components in a liquid mixture. Vital for pharmaceutical and chemical research.</p>
-        <p><strong>Status:</strong> Under Maintenance</p>
-    </div>
-</div>
-
-<div class="card mb-3">
-    <div class="card-header bg-warning text-dark">
-        UV-1800 Spectrophotometer
-    </div>
-    <div class="card-body">
-        <p><strong>Manufacturer:</strong> Shimadzu</p>
-        <p><strong>Description:</strong> UV-Vis Spectrophotometer used to measure absorbance and transmittance of samples in the ultraviolet and visible range. Common in chemical and biological labs.</p>
-        <p><strong>Status:</strong> Available</p>
-    </div>
-</div>
+@if (ViewBag.Instruments != null)
+{
+    <h2 class="text-center text-decoration-underline">Scientific Instruments</h2>
+    <br />
+    foreach (var item in ViewBag.Instruments)
+    {
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                @item.InstrumentName
+            </div>
+            <div class="card-body">
+            @*     <p><strong>Manufacturer:</strong> Shimadzu</p> *@
+                <p><strong class="text-danger">Description:</strong> @item.Remarks.</p>
+               @*  <p><strong>Status:</strong> Under Maintenance</p> *@
+            </div>
+        </div>
+    }
+}

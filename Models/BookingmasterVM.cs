@@ -26,5 +26,12 @@ namespace SICProject.Models
         [Display(Name = "Slot End")]
 
         public TimeOnly? SlotEnd { get; set; }
+
+        [Display(Name = "Student Name")]
+        [Required(ErrorMessage = "Please enter student name")]
+        public string? StudentName { get; set; }
+        [Display(Name = "Instrument Name")]
+        [Required(ErrorMessage = "Instrument Name is required")]
+        public string InstrumentName { get; set; } = null!;
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql.Scaffolding.Internal;
+using SICProject.Models;
 
 namespace SICProject.Models;
 
@@ -109,4 +110,6 @@ public partial class SicdbContext : DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+public DbSet<SICProject.Models.BookingmasterVM> BookingmasterVM { get; set; } = default!;
 }

@@ -18,6 +18,23 @@ namespace SICProject.Controllers
             _db = db;
             _mapper = mapper;
         }
+        //------------------------------Booking start------------------------------//
+        public IActionResult ListOfBooking()
+        {
+            var bookings = _db.Bookingmasters.ToList();
+            List<BookingmasterVM> bookingList = _mapper.Map(bookings, new List<BookingmasterVM>());
+            foreach (var booking in bookingList)
+            {
+                var student = _db.Registrationmasters.FirstOrDefault(s => s.RegistrationId == booking.StudentId);
+                if (student != null)
+                {
+                    booking.StudentName = student.StudentName;
+                }
+            }
+            return View(bookingList);
+        }
+        //------------------------------Booking end------------------------------//
+        //---------------------------- Department start---------------------------//
         public IActionResult ListOfDepartment()
         {
             var departments = _db.Departmentmasters.ToList();

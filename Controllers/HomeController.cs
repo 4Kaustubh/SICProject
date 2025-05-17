@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using SICProject.Models;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Security.Claims;
 
 namespace SICProject.Controllers
@@ -26,6 +28,7 @@ namespace SICProject.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
+            ViewBag.Instruments = _db.Instrumentsmasters.ToList();
             return View();
         }
         [AllowAnonymous]
@@ -149,9 +152,112 @@ namespace SICProject.Controllers
             }
             // Get the list of All Booking as per student from the database
             var AllBooking = _db.Bookingmasters.Where(x => x.StudentId == studentUser.RegistrationId).ToList();
-            ViewBag.AllBooking = AllBooking;
+            var AllBookingVM = new List<BookingmasterVM>();
+            foreach (var booking in AllBooking)
+            {
+                var bookingVM = new BookingmasterVM
+                {
+                    BookingId = booking.BookingId,
+                    InstrumentName = _db.Instrumentsmasters.FirstOrDefault(i => i.InstrumentsId == booking.InstrumentId)?.InstrumentName ?? "",
+                    StudentName = studentUser.StudentName,
+                    Remarks = booking.Remarks,
+                    BookingDate = booking.BookingDate,
+                    SlotStart = booking.SlotStart,
+                    SlotEnd = booking.SlotEnd
+                };
+                AllBookingVM.Add(bookingVM);
+            }
+            ViewBag.AllBooking = AllBookingVM;
             return View();
         }
+        public IActionResult Booking()
+        {
+            var Instruments = _db.Instrumentsmasters.ToList();
+            ViewBag.Instruments = new SelectList(Instruments, "InstrumentsId", "InstrumentName");
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Booking(BookingmasterVM booking)
+        {
+            var Instruments = _db.Instrumentsmasters.ToList();
+            ViewBag.Instruments = new SelectList(Instruments, "InstrumentsId", "InstrumentName");
+
+            if (booking == null || booking.InstrumentId == null)
+            {
+                
+                return View(booking);
+            }
+
+            if (string.IsNullOrWhiteSpace(booking.Remarks))
+            {
+               
+                return View(booking);
+            }
+
+            var studentUser = _db.Registrationmasters.FirstOrDefault(x => x.Email == HttpContext.Session.GetString("User") && 
+                            x.Password == HttpContext.Session.GetString("AppPwd"));
+
+            if (studentUser == null)
+            {
+                TempData["error"] = "Student not found or session expired.";
+                return RedirectToAction("Dashboard");
+            }
+
+            // Get list of holiday dates
+            var holidays = await _db.Holidaymasters.Select(h => h.HolidayDate).ToListAsync();
+            DateTime currentDate = DateTime.Today;
+
+            while (true)
+            {
+                // Skip weekends and holidays
+                if (currentDate.DayOfWeek == DayOfWeek.Saturday ||
+                    currentDate.DayOfWeek == DayOfWeek.Sunday ||
+                    holidays.Contains(DateOnly.FromDateTime(currentDate)))
+                {
+                    currentDate = currentDate.AddDays(1);
+                    continue;
+                }
+
+                // Get all booked slot start times for the selected instrument and date
+                var bookedSlots = await _db.Bookingmasters
+                    .Where(b => b.InstrumentId == booking.InstrumentId &&
+                                b.BookingDate == DateOnly.FromDateTime(currentDate))
+                    .Select(b => b.SlotStart)
+                    .ToListAsync();
+
+                // Generate hourly slots from 9 AM to 4 PM (excluding 4 PM and lunch break 1 PM to 2 PM)
+                for (int hour = 9; hour < 16; hour++)
+                {
+                    // Skip lunch break from 1 PM to 2 PM
+                    if (hour == 13)
+                        continue;
+
+                    TimeOnly slotStart = new TimeOnly(hour, 0);
+                    if (!bookedSlots.Contains(slotStart))
+                    {
+                        // Slot available, save booking
+                        var newBooking = new Bookingmaster
+                        {
+                            InstrumentId = booking.InstrumentId,
+                            StudentId = (int)studentUser.RegistrationId,
+                            Remarks = booking.Remarks,
+                            BookingDate = DateOnly.FromDateTime(currentDate),
+                            SlotStart = slotStart,
+                            SlotEnd = slotStart.AddHours(1)
+                        };
+
+                        _db.Bookingmasters.Add(newBooking);
+                        await _db.SaveChangesAsync();
+
+                        TempData["success"] = $"Booking Successful on {currentDate:dd/MM/yyyy} and Slot {slotStart:hh\\:mm}";
+                        return RedirectToAction("dashboard");
+                    }
+                }
+                // No available slot found for today, check next day
+                currentDate = currentDate.AddDays(1);
+            }
+        }
+
         public IActionResult Logout()
         {
 
@@ -179,7 +285,7 @@ namespace SICProject.Controllers
                 TempData["Error"] = "Please enter your email address.";
                 return View();
             }
-            var studentUser = _db.Registrationmasters.FirstOrDefault(x => x.Email == user.Email && x.MobileNumber==user.AppMobileNumber);
+            var studentUser = _db.Registrationmasters.FirstOrDefault(x => x.Email == user.Email && x.MobileNumber == user.AppMobileNumber);
             if (studentUser != null)
             {
                 // Send email logic here
